@@ -32,7 +32,7 @@ fr_ = lambda s: round(s * FPS)  # noqa: E731
 A1, SWAP, LOCK = f(fr_(cut["kicks"][3])), f(fr_(ws(33))), f(fr_(cut["kicks"][21]))
 RUSH = f(554)
 # hook (riddle.ts WORDS.hook): one scale, SKUTEČNÁ? 540 px wide; slam from 1.3 x
-HK = lambda w: 540 * adv(w) / adv("SKUTEČNÁ?")  # noqa: E731
+HK = lambda w: 500 * adv(w) / adv("SKUTEČNÁ?")  # noqa: E731
 # drop (WORDS.drop): one scale, REÁLNÁ 500 px; ŽÁDNÁ / NENÍ slam from 1.3 x, REÁLNÁ 1.35 x
 DR = lambda w: 500 * adv(w) / adv("REÁLNÁ")  # noqa: E731
 PUNCH = 1.05 * 1.05  # a punch (5 %) + the sway / tilt
@@ -42,7 +42,7 @@ LOGO_PUSH = 1 + 0.012 * (END - f(1090))
 WORDS = [
     ("KTERÁ", f(fr_(ws(0))), A1, 540, 0, HK("KTERÁ") * PUNCH, HK("KTERÁ") * 1.3, 560),
     ("JE", f(fr_(ws(3))), A1, 540, 0, HK("JE") * PUNCH, HK("JE") * 1.3, 560),
-    ("SKUTEČNÁ?", f(fr_(cut["kicks"][1]) + 2), A1, 540, 0, 540 * 1.03, 540 * 1.3, 640),
+    ("SKUTEČNÁ?", f(fr_(cut["kicks"][1]) + 2), A1, 540, 0, 500 * 1.03, 500 * 1.3, 640),
     ("ŽÁDNÁ", f(fr_(ws(16))), RUSH, 540, 0, DR("ŽÁDNÁ") * PUNCH, DR("ŽÁDNÁ") * 1.3, 640),
     ("NENÍ", f(fr_(ws(17))), RUSH, 540, 0, DR("NENÍ") * PUNCH, DR("NENÍ") * 1.3, 640),
     ("REÁLNÁ", f(fr_(ws(18))), RUSH, 540, 0, 500 * PUNCH, 500 * 1.35, 640),

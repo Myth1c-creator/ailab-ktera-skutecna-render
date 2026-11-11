@@ -27,7 +27,7 @@ const slotP = (i: number, f: readonly [number, number] = [0.5, 0.5]): [number, n
 
 // the big words: centre y and width at rest (px); the slam starts at 1.3 x, so the widest peak is 1.3 x 520 = 676 (margin 202)
 export const WORDS = {
-  hook: { w: 540, y: [740, 855, 985] }, // KTERÁ / JE / SKUTEČNÁ? on one scale (SKUTEČNÁ? is the widest)
+  hook: { w: 500, y: [740, 855, 985] }, // KTERÁ / JE / SKUTEČNÁ? on one scale (SKUTEČNÁ? is the widest)
   drop: { w: 500, y: [770, 900, 1030] }, // ŽÁDNÁ / NENÍ / REÁLNÁ on one scale (REÁLNÁ is the widest)
 };
 
@@ -39,14 +39,14 @@ const KEYS: CamKey[] = [
   { t: 0, st: st([0, 0], [540, 880], 1.55, 0.07, -0.22, 0.08), dz: -1.1, dr: -0.12 }, // frame 0: the grid slams in, tilted
   { t: S.cutA, st: st([-70, 150], [540, 830], 1.95, -0.07, 0.2, 0.05), dz: 0.3, dr: 0.05 }, // CUT A: a tighter angle on 01 / 02
   { t: S.cutB, st: st([110, -150], [540, 900], 1.55, 0.06, -0.18, -0.06), dz: 0.35, dr: -0.05 }, // CUT B: the lower half, 03 / 04
-  { t: S.a1, st: solo(0, [0.5, 0.5], 1.62) }, // 01 lands (a cut behind the lime flood)
-  { t: S.mac1 + 6, st: solo(0, DETAIL.n1, 2.6), dur: 0.33, dz: 0.1 }, // macro: the freckles
-  { t: S.a2, st: solo(1, [0.5, 0.5], 1.6), dur: 5 / 60 }, // whip to 02
+  { t: S.a1, st: solo(0, [0.5, 0.5], 1.62), dz: 0.15 }, // 01 lands (a cut behind the lime flood)
+  { t: S.mac1 + 6 / 60, st: solo(0, DETAIL.n1, 2.6), dur: 0.33, dz: 0.1 }, // macro: the freckles
+  { t: S.a2, st: solo(1, [0.5, 0.5], 1.6), dur: 5 / 60, dz: 0.12 }, // whip to 02
   { t: S.mac2, st: solo(1, DETAIL.n2, 2.5), dur: 0.22, dz: 0.1 }, // macro: the face
-  { t: S.a3, st: solo(2, [0.5, 0.5], 1.5), dur: 6 / 60 }, // whip to 03 (diagonally across the grid)
+  { t: S.a3, st: solo(2, [0.5, 0.5], 1.5), dur: 6 / 60, dz: 0.12 }, // whip to 03 (diagonally across the grid)
   { t: S.hand, st: solo(2, DETAIL.n3h, 2.7), dur: 0.16, dz: 0.08 }, // macro: the hand with the heart
   { t: S.face3, st: solo(2, DETAIL.n3f, 2.3), dur: 0.25, dz: 0.05 }, // back up to the face
-  { t: S.a4, st: solo(3, [0.5, 0.5], 1.55), dur: 5 / 60 }, // whip to 04
+  { t: S.a4, st: solo(3, [0.5, 0.5], 1.55), dur: 5 / 60, dz: 0.12 }, // whip to 04
   { t: S.glint, st: solo(3, DETAIL.z4, 2.4), dur: 0.22, dz: 0.06 }, // macro: the phone's glint
   { t: S.grid, st: GRID(1.0, 0.03, 0.06, 0.1), dur: 30 / 60, dz: 0.012, dr: -0.01 }, // crane up: the whole grid
   { t: S.drop, st: GRID(1.3, -0.05, 0.12, 0.1) }, // THE DROP: a hard cut, in too close ...
@@ -209,7 +209,7 @@ export function buildRiddle(M: Media, SR: Record<Key, Src>): World {
     DU.mat.opacity = 0.7 * (0.6 + 0.4 * dk);
 
     // ── the rig ──
-    place(pivot, base, cs.s[0], cs.s[1], 1000 * cs.z, 1000, D, [cs.rx, cs.ry, cs.roll]);
+    place(pivot, base, cs.s[0] + 10 * Math.sin(t * 2.3), cs.s[1] + 8 * Math.sin(t * 1.9), 1000 * cs.z, 1000, D, [cs.rx + 0.015 * Math.sin(t * 1.3), cs.ry + 0.03 * Math.sin(t * 1.7), cs.roll + 0.012 * Math.sin(t * 2.1)]);
     inner.position.set(-cs.p[0], -cs.p[1], 0);
     const L = lone(t);
     tiles.forEach((tl, i) => {
@@ -267,15 +267,15 @@ export function buildRiddle(M: Media, SR: Record<Key, Src>): World {
     // ── the hook words (0.250 KTERÁ, 0.911 JE, 0.935 SKUTEČNÁ?) over the flying cards, a soft plate keeps them readable ──
     const hookEnd = S.a1;
     const wpx = (w: { w: number }) => w.w * sH;
-    showW(wK, base, t, S.kter, hookEnd, 540, WORDS.hook.y[0], wpx(wK), { from: 1.3, punch: [S.cutB], seed: 0.4 });
-    showW(wJ, base, t, S.je, hookEnd, 540, WORDS.hook.y[1], wpx(wJ), { from: 1.3, punch: [S.cutB], seed: 1.1 });
-    showW(wS, base, t, S.skut, hookEnd, 540, WORDS.hook.y[2], WORDS.hook.w, { from: 1.3, punch: [], seed: 2.3 });
+    showW(wK, base, t, S.kter, hookEnd, 540, WORDS.hook.y[0], wpx(wK), { from: 1.3, punch: [S.cutB], seed: 0.4, d: D - 1.2 });
+    showW(wJ, base, t, S.je, hookEnd, 540, WORDS.hook.y[1], wpx(wJ), { from: 1.3, punch: [S.cutB], seed: 1.1, d: D - 1.2 });
+    showW(wS, base, t, S.skut, hookEnd, 540, WORDS.hook.y[2], WORDS.hook.w, { from: 1.3, punch: [], seed: 2.3, d: D - 1.2 });
     {
       const on = t >= S.kter && t < hookEnd;
       plate.visible = on || (t >= S.zhad && t < S.fin);
       const o = t < S.a1 ? 0.65 * clamp((t - S.kter) / 0.1) : 0.8 * clamp((t - S.zhad) / (5 / 60));
       (plate.material as THREE.MeshBasicMaterial).opacity = o;
-      place(plate, base, 540, t < S.a1 ? 860 : 900, t < S.a1 ? 1500 : 1400, 1, D + 0.5);
+      place(plate, base, 540, t < S.a1 ? 860 : 900, t < S.a1 ? 1500 : 1400, 1, D - 0.8);
       // the giant lime "?" behind the grid (frame 0 to the flood)
       bigQ.g.visible = t < S.a1;
       if (bigQ.g.visible) place(bigQ.g, base, 540, 900, 560 * (1 + 0.05 * t), bigQ.w, D + 1.6, [0.1, -0.12 * Math.sin(t * 2), 0]);
@@ -284,14 +284,14 @@ export function buildRiddle(M: Media, SR: Record<Key, Src>): World {
       flood.visible = t >= g0 && t < g1 + 5 / 60;
       if (flood.visible) {
         const u = clamp((t - g0) / (g1 - g0));
-        place(flood, base, lerp(540 + 0.43 * WORDS.hook.w, 540, u), lerp(WORDS.hook.y[2] + 30, 960, u), 60 + 3400 * inCubic(u), 2, D - 1.2);
+        place(flood, base, lerp(540 + 0.43 * WORDS.hook.w, 540, u), lerp(WORDS.hook.y[2] + 30, 960, u), 60 + 3400 * inCubic(u), 2, D - 1.7);
         (flood.material as THREE.MeshBasicMaterial).opacity = t < g1 ? 1 : 1 - clamp((t - g1) / (5 / 60));
       }
     }
     // ── THE DROP words ──
-    showW(wZ, base, t, S.zhad, S.rush + 0.1, 540, WORDS.drop.y[0], wZ.w * sD, { from: 1.3, punch: [S.k11, S.k12], seed: 0.8 });
-    showW(wN, base, t, S.nenit, S.rush + 0.1, 540, WORDS.drop.y[1], wN.w * sD, { from: 1.3, punch: [S.k11, S.k12], seed: 1.6 });
-    showW(wR, base, t, S.real, S.rush + 0.1, 540, WORDS.drop.y[2], wR.w * sD, { from: 1.35, punch: [S.k11, S.k12], seed: 2.4 });
+    showW(wZ, base, t, S.zhad, S.rush + 0.1, 540, WORDS.drop.y[0], wZ.w * sD, { from: 1.3, punch: [S.k11, S.k12], seed: 0.8, d: D - 1.2 });
+    showW(wN, base, t, S.nenit, S.rush + 0.1, 540, WORDS.drop.y[1], wN.w * sD, { from: 1.3, punch: [S.k11, S.k12], seed: 1.6, d: D - 1.2 });
+    showW(wR, base, t, S.real, S.rush + 0.1, 540, WORDS.drop.y[2], wR.w * sD, { from: 1.35, punch: [S.k11, S.k12], seed: 2.4, d: D - 1.2 });
     {
       const rr = [S.drop, S.k11, S.k12].map((h) => t - h).find((d) => d >= 0 && d < 0.45);
       ring.visible = rr !== undefined;
@@ -310,7 +310,7 @@ export function buildRiddle(M: Media, SR: Record<Key, Src>): World {
     const gl = (t0: number) => (t >= t0 && t < t0 + 3 / 60 ? 1 : 0);
     const rushFl = smooth((t - (F.fin - 8) / 60) / (8 / 60));
     return {
-      focus: D,
+      focus: D - 0.4,
       ap: 4,
       flash: Math.max(fl, dropFl, t >= S.a1 && t < S.a1 + 1 / 60 ? 0.3 : 0, t >= S.cutB && t < S.cutB + 1 / 60 ? 0.3 : 0, rushFl, env(t, IMPS, 30) * 0.05),
       ca: 0.3 + env(t, IMPS, 14) * 1.2 + (f60 < 3 ? 3 : 0) + (gl(S.cutA) + gl(S.cutB)) * 2.6 + (t >= S.drop && t < S.drop + 3 / 60 ? 3.2 : 0),
