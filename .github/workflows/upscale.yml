@@ -1,0 +1,40 @@
+# Real-ESRGAN x4 of the four photos of the riddle (n1 zrzka u dveří, n2 drdol, n3 srdíčko, z4 zrcadlo), in the render repo (CPU, one job,
+# a few minutes). The originals come in foto_src.tar.gpg (AES-256, the ASSETS_KEY secret), the result goes out the same way as an asset of
+# a per-run prerelease: foto_x4.tar.gpg. Then, on the PC: decrypt it into assets/foto_x4/, python prep_photos.py, bash make_render_repo.sh.
+#   gh workflow run upscale.yml      (no inputs)
+name: upscale
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  up:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    env:
+      ASSETS_KEY: ${{ secrets.ASSETS_KEY }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Originals
+        run: |
+          mkdir -p in
+          gpg --batch --quiet --pinentry-mode loopback --passphrase-fd 3 -d foto_src.tar.gpg 3<<<"$ASSETS_KEY" | tar x -C in
+          ls in
+      - name: Real-ESRGAN x4
+        run: |
+          pip install --progress-bar off torch --index-url https://download.pytorch.org/whl/cpu
+          pip install --progress-bar off pillow numpy
+          python tools/esrgan_photos.py --inp in --out up
+          ls -la up
+      - name: Upload (encrypted)
+        run: |
+          tar -c -C up . | gpg --batch --quiet --pinentry-mode loopback --passphrase-fd 3 --symmetric --cipher-algo AES256 -o foto_x4.tar.gpg 3<<<"$ASSETS_KEY"
+          gh release create "run-${{ github.run_id }}" --target "$GITHUB_SHA" --prerelease --title "run-${{ github.run_id }}" --notes "x4 photos" -R "$GITHUB_REPOSITORY"
+          gh release upload "run-${{ github.run_id }}" foto_x4.tar.gpg --clobber -R "$GITHUB_REPOSITORY"

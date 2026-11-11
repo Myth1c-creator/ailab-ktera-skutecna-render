@@ -1,0 +1,20 @@
+# public render repo: only code + the encrypted archives; never readable media or texts
+node_modules/
+out/
+enc/
+parts/
+in/
+up/
+public/hook/
+public/img/*.jpg
+audio/
+kinetic/audio/
+capwords.json
+*.wav
+*.mp3
+*.mp4
+*.jpg
+*.png
+*.tar
+.env
+*.pass
